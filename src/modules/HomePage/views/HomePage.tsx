@@ -22,6 +22,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Typography,
+  Drawer,
 } from "@mui/material";
 import { useHomePageStore } from "../stores/home-page.store";
 import { type Location } from "../types/spatial.types";
@@ -40,6 +41,10 @@ const HomePage: React.FC = () => {
   const [radiusKm, setRadiusKm] = useState(1);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
+  const [openDrawerDetail, setOpenDrawerDetail] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null,
+  );
 
   const handleFilterOpen = () => {
     setOpenDialog(true);
@@ -95,64 +100,6 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const drawRadiusCircle = (center: [number, number], radiusKm: number) => {
-    if (!mapRef.current) return;
-
-    clearRadius();
-
-    const radiusDeg = radiusKm / 111;
-
-    const points = [];
-    const steps = 64;
-    const centerLng = center[0];
-    const centerLat = center[1];
-
-    for (let i = 0; i <= steps; i++) {
-      const angle = (((i * 360) / steps) * Math.PI) / 180;
-      const dx = radiusDeg * Math.cos(angle);
-      const dy =
-        (radiusDeg * Math.sin(angle)) / Math.cos((centerLat * Math.PI) / 180);
-      points.push([centerLng + dx, centerLat + dy]);
-    }
-    points.push(points[0]);
-
-    const circleGeoJSON = {
-      type: "Feature",
-      geometry: {
-        type: "Polygon",
-        coordinates: [points],
-      },
-      properties: {},
-    };
-
-    const sourceId = "radius-source";
-    const layerId = "radius-layer";
-
-    if (mapRef.current.getSource(sourceId)) {
-      (mapRef.current.getSource(sourceId) as mapboxgl.GeoJSONSource).setData(
-        circleGeoJSON,
-      );
-    } else {
-      mapRef.current.addSource(sourceId, {
-        type: "geojson",
-        data: circleGeoJSON,
-      });
-
-      mapRef.current.addLayer({
-        id: layerId,
-        type: "fill",
-        source: sourceId,
-        paint: {
-          "fill-color": "#3b82f6",
-          "fill-opacity": 0.2,
-          "fill-outline-color": "#2563eb",
-        },
-      });
-
-      radiusLayerRef.current = layerId;
-    }
-  };
-
   const addMarkers = (locationList: Location[], color: string = "#ef4444") => {
     if (!mapRef.current) return;
 
@@ -171,17 +118,13 @@ const HomePage: React.FC = () => {
         el.style.cursor = "pointer";
         el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
 
-        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-          <div style="padding: 8px;">
-            <strong>${location.name}</strong><br/>
-            <span style="font-size: 12px;">${location.category || "Tidak ada kategori"}</span>
-            ${location.distance_meters ? `<br/><span style="font-size: 12px;">Jarak: ${(location.distance_meters / 1000).toFixed(2)} km</span>` : ""}
-          </div>
-        `);
+        el.addEventListener("click", () => {
+          setSelectedLocation(location);
+          setOpenDrawerDetail(true);
+        });
 
         const marker = new mapboxgl.Marker(el)
           .setLngLat([lng, lat])
-          .setPopup(popup)
           .addTo(mapRef.current!);
 
         markersRef.current.push(marker);
@@ -223,7 +166,6 @@ const HomePage: React.FC = () => {
     ) {
       clearMarkers();
       addMarkers(nearbyLocations, "#ef4444");
-      drawRadiusCircle(radiusCenter, radiusKm);
 
       const bounds = new mapboxgl.LngLatBounds();
       bounds.extend(radiusCenter);
@@ -445,6 +387,31 @@ const HomePage: React.FC = () => {
           />
         </div>
       </div>
+      <Drawer
+        anchor="left"
+        open={openDrawerDetail}
+        onClose={() => setOpenDrawerDetail(false)}
+      >
+        <Box sx={{ width: 250, p: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Detail Lokasi
+          </Typography>
+          {selectedLocation && (
+            <>
+              <Typography variant="h6">{selectedLocation.name}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {selectedLocation.category || "Tidak ada kategori"}
+              </Typography>
+              {selectedLocation.distance_meters && (
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  Jarak: {(selectedLocation.distance_meters / 1000).toFixed(2)}{" "}
+                  km
+                </Typography>
+              )}
+            </>
+          )}
+        </Box>
+      </Drawer>
     </>
   );
 };
