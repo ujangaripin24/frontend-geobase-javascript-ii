@@ -179,11 +179,17 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     if (mapContainerRef.current && !mapRef.current) {
+      const maxBound = [
+        [94.0, -11.0],
+        [141.0, 6.0],
+      ];
+
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: "mapbox://styles/mapbox/streets-v12",
-        center: [106.8272, -6.1751],
-        zoom: 9,
+        center: [118.0, -2.5],
+        zoom: 10,
+        maxBounds: maxBound,
       });
 
       mapRef.current.on("load", () => {
