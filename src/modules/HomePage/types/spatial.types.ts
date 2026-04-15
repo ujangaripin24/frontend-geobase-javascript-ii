@@ -1,4 +1,5 @@
 export interface Location {
+  geometry: any;
   id: string;
   name: string;
   category: string;
