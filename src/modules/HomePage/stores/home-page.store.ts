@@ -42,6 +42,8 @@ export const useHomePageStore = create<HomePageState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await spatialService.getAllLocations();
+      console.log("hasil data fetchAllLocations", response);
+
       set({ locations: response.data || [], isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
@@ -55,6 +57,7 @@ export const useHomePageStore = create<HomePageState>((set, get) => ({
         radius_km: radiusKm,
         limit: 50,
       });
+      console.log("hasil data findNearby", response);
 
       set({
         nearbyLocations: response.data || [],
@@ -70,6 +73,8 @@ export const useHomePageStore = create<HomePageState>((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await spatialService.calculateDistance(fromId, toId);
+      console.log("hasil data calculateDistanceBetween", response);
+
       set({ isLoading: false });
       return response.data.distance_meters;
     } catch (error: any) {
@@ -81,6 +86,8 @@ export const useHomePageStore = create<HomePageState>((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await spatialService.checkPointInArea(lng, lat);
+      console.log("hasil data checkPointInArea", response);
+
       set({ isLoading: false });
       return response;
     } catch (error: any) {
