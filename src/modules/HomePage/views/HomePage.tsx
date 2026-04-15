@@ -40,7 +40,6 @@ const HomePage: React.FC = () => {
   const [searchCenter, setSearchCenter] = useState("Kantor Pusat");
   const [radiusKm, setRadiusKm] = useState(1);
   const [openDialog, setOpenDialog] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
   const [openDrawerDetail, setOpenDrawerDetail] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null,
@@ -354,25 +353,6 @@ const HomePage: React.FC = () => {
             </DialogActions>
           </Dialog>
         </div>
-        {/* {nearbyLocations.length > 0 && (
-          <Alert variant="filled" severity="success">
-            <div className="flex justify-between items-center">
-              <div>
-                <span className="font-semibold">
-                  📍 Ditemukan {nearbyLocations.length} lokasi
-                </span>
-                <span className="ml-2 text-sm text-gray-600">
-                  dalam radius {radiusKm} km dari "{searchCenter}"
-                </span>
-              </div>
-              <Chip
-                label={`Radius: ${radiusKm} km`}
-                color="primary"
-                size="small"
-              />
-            </div>
-          </Alert>
-        )} */}
 
         {error && (
           <Alert severity="error" className="mb-4">
