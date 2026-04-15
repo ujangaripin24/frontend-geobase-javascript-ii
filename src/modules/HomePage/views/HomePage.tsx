@@ -13,9 +13,19 @@ import {
   Alert,
   Slider,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Accordion,
+  AccordionActions,
+  AccordionDetails,
+  AccordionSummary,
+  Typography,
 } from "@mui/material";
 import { useHomePageStore } from "../stores/home-page.store";
 import { type Location } from "../types/spatial.types";
+import { FaArrowAltCircleUp } from "react-icons/fa";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API;
 
@@ -28,6 +38,16 @@ const HomePage: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchCenter, setSearchCenter] = useState("Kantor Pusat");
   const [radiusKm, setRadiusKm] = useState(1);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+
+  const handleFilterOpen = () => {
+    setOpenDialog(true);
+  };
+
+  const handleFilterClose = () => {
+    setOpenDialog(false);
+  };
 
   const {
     locations,
@@ -172,12 +192,14 @@ const HomePage: React.FC = () => {
   const handleSearchNearby = async () => {
     clearMarkers();
     await findNearby(searchCenter, radiusKm);
+    handleFilterClose();
   };
 
   const handleReset = () => {
     clearMarkers();
     clearRadius();
     clearNearby();
+    handleFilterClose();
     addMarkers(locations, "#3b82f6");
   };
 
@@ -243,88 +265,155 @@ const HomePage: React.FC = () => {
     <>
       <AppNavbar />
       <div className="p-2">
-        <Paper elevation={2} className="p-4 mb-4">
-          <div className="flex flex-wrap gap-4 items-end">
-            <div className="flex-1 min-w-[200px]">
-              <TextField
-                label="Cari dari lokasi"
-                value={searchCenter}
-                onChange={(e) => setSearchCenter(e.target.value)}
-                size="small"
-                fullWidth
-                placeholder="Contoh: Kantor Pusat"
-              />
-            </div>
+        <div>
+          <Button variant="outlined" onClick={handleFilterOpen}>
+            Filter
+          </Button>
+          <Dialog
+            fullWidth
+            maxWidth="sm"
+            open={openDialog}
+            onClose={handleFilterClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            role="alertdialog"
+          >
+            <DialogTitle id="alert-dialog-title">Filter</DialogTitle>
+            <DialogContent>
+              <div>
+                <Accordion defaultExpanded>
+                  <AccordionSummary
+                    expandIcon={<FaArrowAltCircleUp />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    <Typography component="span">
+                      Search And Filter Data
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <div className="mt-2">
+                      <TextField
+                        label="Cari dari lokasi"
+                        value={searchCenter}
+                        onChange={(e) => setSearchCenter(e.target.value)}
+                        size="small"
+                        fullWidth
+                        placeholder="Contoh: Kantor Pusat"
+                      />
+                    </div>
 
-            <div className="flex-1 min-w-[200px]">
-              <div className="mb-1 text-sm text-gray-600">
-                Radius: {radiusKm} km
+                    <div className="mt-2">
+                      <div className="mb-1 text-sm text-gray-600">
+                        Radius: {radiusKm} km
+                      </div>
+                      <Slider
+                        value={radiusKm}
+                        onChange={(_, val) => setRadiusKm(val as number)}
+                        min={0.5}
+                        max={5}
+                        step={0.5}
+                        size="small"
+                      />
+                    </div>
+                    <div>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSearchNearby}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <CircularProgress size={24} />
+                        ) : (
+                          "Cari dalam Radius"
+                        )}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleReset}
+                      >
+                        Reset
+                      </Button>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<FaArrowAltCircleUp />}
+                    aria-controls="panel2-content"
+                    id="panel2-header"
+                  >
+                    <Typography component="span">Change Map Style</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Button
+                      variant="contained"
+                      id="basic-button"
+                      aria-controls={handlOpen ? "basic-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={handlOpen ? "true" : undefined}
+                      onClick={handleClick}
+                    >
+                      Ganti Style Peta
+                    </Button>
+                    <Menu
+                      id="basic-menu"
+                      anchorEl={anchorEl}
+                      open={handlOpen}
+                      onClose={handleClose}
+                    >
+                      <MenuItem onClick={() => changeStyle("streets-v12")}>
+                        Standar
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => changeStyle("satellite-streets-v12")}
+                      >
+                        Satelit
+                      </MenuItem>
+                      <MenuItem onClick={() => changeStyle("dark-v11")}>
+                        Mode Malam
+                      </MenuItem>
+                      <MenuItem onClick={() => changeStyle("outdoors-v12")}>
+                        Outdoor
+                      </MenuItem>
+                    </Menu>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<FaArrowAltCircleUp />}
+                    aria-controls="panel3-content"
+                    id="panel3-header"
+                  >
+                    <Typography component="span">Accordion Actions</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Suspendisse malesuada lacus ex, sit amet blandit leo
+                    lobortis eget.
+                  </AccordionDetails>
+                  <AccordionActions>
+                    <Button>Cancel</Button>
+                    <Button>Agree</Button>
+                  </AccordionActions>
+                </Accordion>
               </div>
-              <Slider
-                value={radiusKm}
-                onChange={(_, val) => setRadiusKm(val as number)}
-                min={0.5}
-                max={5}
-                step={0.5}
-                size="small"
-              />
-            </div>
-
-            <div>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSearchNearby}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <CircularProgress size={24} />
-                ) : (
-                  "Cari dalam Radius"
-                )}
-              </Button>
+            </DialogContent>
+            <DialogActions>
               <Button
                 variant="outlined"
                 color="secondary"
-                onClick={handleReset}
+                onClick={handleFilterClose}
               >
-                Reset
+                Close
               </Button>
-              <Button
-                variant="contained"
-                id="basic-button"
-                aria-controls={handlOpen ? "basic-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={handlOpen ? "true" : undefined}
-                onClick={handleClick}
-              >
-                Ganti Style Peta
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={handlOpen}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={() => changeStyle("streets-v12")}>
-                  Standar
-                </MenuItem>
-                <MenuItem onClick={() => changeStyle("satellite-streets-v12")}>
-                  Satelit
-                </MenuItem>
-                <MenuItem onClick={() => changeStyle("dark-v11")}>
-                  Mode Malam
-                </MenuItem>
-                <MenuItem onClick={() => changeStyle("outdoors-v12")}>
-                  Outdoor
-                </MenuItem>
-              </Menu>
-            </div>
-          </div>
-        </Paper>
-
-        {nearbyLocations.length > 0 && (
-          <Paper elevation={1} className="p-3 mb-4 bg-blue-50">
+            </DialogActions>
+          </Dialog>
+        </div>
+        {/* {nearbyLocations.length > 0 && (
+          <Alert variant="filled" severity="success">
             <div className="flex justify-between items-center">
               <div>
                 <span className="font-semibold">
@@ -340,8 +429,8 @@ const HomePage: React.FC = () => {
                 size="small"
               />
             </div>
-          </Paper>
-        )}
+          </Alert>
+        )} */}
 
         {error && (
           <Alert severity="error" className="mb-4">
