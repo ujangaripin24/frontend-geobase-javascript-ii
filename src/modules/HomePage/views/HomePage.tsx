@@ -183,7 +183,7 @@ const HomePage: React.FC = () => {
         container: mapContainerRef.current,
         style: "mapbox://styles/mapbox/streets-v12",
         center: [106.8272, -6.1751],
-        zoom: 12,
+        zoom: 9,
       });
 
       mapRef.current.on("load", () => {
