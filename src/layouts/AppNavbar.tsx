@@ -14,6 +14,7 @@ import {
 import { FaArchive } from "react-icons/fa";
 import React from "react";
 import { FaBurger } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 const pages = ["Products", "Pricing", "Blog"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
@@ -149,13 +150,11 @@ const AppNavbar: React.FC = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography sx={{ textAlign: "center" }}>
-                      {setting}
-                    </Typography>
-                  </MenuItem>
-                ))}
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: "center" }}>
+                    <Link to={"/dashboard"}>Dashboard</Link>
+                  </Typography>
+                </MenuItem>
               </Menu>
             </Box>
           </Toolbar>

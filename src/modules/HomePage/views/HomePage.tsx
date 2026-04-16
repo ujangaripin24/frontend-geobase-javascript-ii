@@ -189,6 +189,8 @@ const HomePage: React.FC = () => {
         style: "mapbox://styles/mapbox/streets-v12",
         center: [118.0, -2.5],
         zoom: 10,
+        maxZoom: 15,
+        minZoom: 5,
         maxBounds: maxBound,
       });
 
