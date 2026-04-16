@@ -129,7 +129,7 @@ const DashboardPage: React.FC = () => {
     if (!mapRef.current) return;
 
     locationList.forEach((location) => {
-      let lng, lat;
+      let lng: number, lat: number;
 
       if (location.geometry?.coordinates) {
         lng = location.geometry.coordinates[0];
@@ -221,7 +221,16 @@ const DashboardPage: React.FC = () => {
       const bounds = new mapboxgl.LngLatBounds();
       bounds.extend(radiusCenter);
       nearbyLocations.forEach((loc) => {
-        let lng, lat;
+        let lng:
+            | number
+            | [number, number]
+            | { lng: number; lat: number }
+            | { lon: number; lat: number },
+          lat:
+            | number
+            | [number, number]
+            | { lng: number; lat: number }
+            | { lon: number; lat: number };
         if (loc.geometry?.coordinates) {
           lng = loc.geometry.coordinates[0];
           lat = loc.geometry.coordinates[1];
@@ -395,7 +404,7 @@ const DashboardPage: React.FC = () => {
                   className="hover:bg-gray-100 cursor-pointer rounded mb-1"
                   onClick={() => {
                     setDrawerOpen(false);
-                    let lng, lat;
+                    let lng: number, lat: number;
                     if (loc.geometry?.coordinates) {
                       lng = loc.geometry.coordinates[0];
                       lat = loc.geometry.coordinates[1];

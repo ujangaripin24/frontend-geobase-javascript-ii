@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8100/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -11,12 +10,12 @@ const api = axios.create({
 });
 
 export const getAllLocations = async () => {
-  const response = await api.get("/v1/items");
+  const response = await api.get("v1/items");
   return response.data;
 };
 
 export const getLocationById = async (id: string) => {
-  const response = await api.get(`/items/${id}`);
+  const response = await api.get(`/v1/items/${id}`);
   return response.data;
 };
 
