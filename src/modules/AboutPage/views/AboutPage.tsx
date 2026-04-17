@@ -17,7 +17,7 @@ const AboutPage: React.FC = () => {
         [95.0, -11.0],
         [141.0, 6.0],
       ],
-      zoom: 9,
+      zoom: 6,
     });
 
     map.addControl(new maplibregl.NavigationControl(), "top-right");
