@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import AppNavbar from "../../../layouts/AppNavbar";
+import AppNavbar from "../../../../layouts/AppNavbar";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 

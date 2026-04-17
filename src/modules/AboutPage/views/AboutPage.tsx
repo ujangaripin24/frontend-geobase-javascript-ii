@@ -13,6 +13,10 @@ const AboutPage: React.FC = () => {
       container: mapContainer.current,
       style: "https://demotiles.maplibre.org/style.json",
       center: [106.8272, -6.1751],
+      maxBounds: [
+        [95.0, -11.0],
+        [141.0, 6.0],
+      ],
       zoom: 9,
     });
 
