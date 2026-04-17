@@ -1,5 +1,13 @@
-import { Box, TextField, Stack, Button } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Stack,
+  Button,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
 import React, { useState } from "react";
+import { useLocationDataStore } from "../stores/location-data.store";
 
 const AddLocationDataPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -30,17 +38,23 @@ const AddLocationDataPage: React.FC = () => {
     });
   };
 
+  const { isLoading, error, postLocationData } = useLocationDataStore();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const jsonOutput = JSON.stringify(formData, null, 2);
-
-    console.log("Data yang dikirim (JSON):", jsonOutput);
+    postLocationData(formData);
+    console.log("Data yang dikirim:", formData);
   };
 
   return (
     <Box sx={{ p: 4, maxWidth: 500 }}>
       <h2>Add Location Data</h2>
+      {error && (
+        <Alert severity="error" className="mb-4">
+          {error}
+        </Alert>
+      )}
       <form onSubmit={handleSubmit}>
         <Stack spacing={3}>
           <TextField
@@ -91,8 +105,9 @@ const AddLocationDataPage: React.FC = () => {
           variant="contained"
           color="primary"
           sx={{ mt: 2 }}
+          disabled={isLoading}
         >
-          Submit Data
+          {isLoading ? <CircularProgress size={24} /> : "Submit Data"}
         </Button>
       </form>
     </Box>
